@@ -1,25 +1,36 @@
 name: Build Game Live Translator
+
 on:
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - run: pip install -r requirements.txt
-      - name: Install Tesseract OCR
-        shell: powershell
-        run: choco install tesseract --yes
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Instalar Tesseract OCR
+        run: choco install tesseract -y
+
       - name: Build EXE
         shell: powershell
         run: |
           $tess = (Get-Command tesseract.exe).Source
-          $tdir = Split-Path $tess
-          pyinstaller --noconfirm --clean --onefile --windowed --name GameLiveTranslator --collect-all deep_translator --collect-all pytesseract --collect-all PIL --add-binary "$tdir\tesseract.exe;." GameLiveTranslator.py
-      - uses: actions/upload-artifact@v4
+          $tessDir = Split-Path $tess
+          pyinstaller --noconfirm --clean --onefile --windowed --name GameLiveTranslator --add-binary "$tess;." --add-data "$tessDir\tessdata;tessdata" GameLiveTranslator.py
+
+      - name: Subir EXE
+        uses: actions/upload-artifact@v4
         with:
           name: GameLiveTranslator-Windows
           path: dist/GameLiveTranslator.exe
