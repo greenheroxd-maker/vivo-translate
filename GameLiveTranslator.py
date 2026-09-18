@@ -9,6 +9,17 @@ CACHE=Path.home()/'.game_live_translator_cache.json'
 try:
     from PIL import ImageGrab
     import pytesseract
+    import os
+
+tesseract_paths = [
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+    r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+]
+
+for path in tesseract_paths:
+    if os.path.exists(path):
+        pytesseract.pytesseract.tesseract_cmd = path
+        break
     from deep_translator import GoogleTranslator
 except Exception as e:
     IMPORT_ERROR=str(e)
