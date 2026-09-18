@@ -25,9 +25,18 @@ jobs:
       - name: Build EXE
         shell: powershell
         run: |
-          $tess = (Get-Command tesseract.exe).Source
-          $tessDir = Split-Path $tess
-          pyinstaller --noconfirm --clean --onefile --windowed --name GameLiveTranslator --add-binary "$tess;." --add-data "$tessDir\tessdata;tessdata" GameLiveTranslator.py
+          $tessDir = "C:\Program Files\Tesseract-OCR"
+
+          if (!(Test-Path "$tessDir\tesseract.exe")) {
+              Write-Error "No se encontro Tesseract en $tessDir"
+              exit 1
+          }
+
+          pyinstaller --noconfirm --clean --onefile --windowed `
+            --name GameLiveTranslator `
+            --add-binary "$tessDir\tesseract.exe;." `
+            --add-data "$tessDir\tessdata;tessdata" `
+            GameLiveTranslator.py
 
       - name: Subir EXE
         uses: actions/upload-artifact@v4
