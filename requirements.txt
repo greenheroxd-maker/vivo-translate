@@ -1,0 +1,4 @@
+deep-translator==1.11.4
+Pillow==11.3.0
+pytesseract==0.3.13
+pyinstaller==6.16.0
